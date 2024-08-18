@@ -3,6 +3,14 @@ let maxElevatorCount;
 let inputForm = document.querySelector("form");
 inputForm.addEventListener("submit", createInterface);
 
+let elevators = [];
+
+const elevatorHeight = 90.8;
+let queuedRequests = [];
+let activeRequests = [];
+
+setInterval(elevatorManager, 50);
+
 function checkInputValidity(floorCount, elevatorCount) {
   if (isNaN(elevatorCount) || isNaN(floorCount)) {
     alert(`Input fields cannot be empty`);
@@ -93,7 +101,104 @@ function createInterface(event) {
   let elevatorCount = parseInt(elevatorCountInput.value);
   if (checkInputValidity(floorCount, elevatorCount)) {
     inputSection.style.display = "none";
-    returnBtnArea.style.display = "block";
     createStructure(floorCount, elevatorCount);
   }
+}
+
+function extractNumberFromId(string) {
+  const regex = /\d+/;
+  const match = regex.exec(string);
+  return match ? parseInt(match[0], 10) : null;
+}
+
+function handleFloorRequest(event) {
+  floorNum = extractNumberFromId(event.id);
+  if (
+    !queuedRequests.includes(floorNum) &&
+    !activeRequests.includes(floorNum)
+  ) {
+    queuedRequests.push(floorNum);
+  }
+}
+
+function elevatorManager() {
+  if (queuedRequests.length > 0) {
+    const closestElevator = findClosestIdleElevator(queuedRequests[0]);
+    if (closestElevator) {
+      elevatorId = extractNumberFromId(closestElevator.element.id);
+      operateElevator(elevatorId, queuedRequests[0]);
+    }
+  }
+}
+
+function operateElevator(elevatorId, floorNum) {
+  queuedRequests.shift();
+  activeRequests[elevatorId - 1] = floorNum;
+  const elevator = elevators[elevatorId - 1];
+  elevators[elevatorId - 1].inUse = true;
+  const verticalMove = (floorNum - 1) * elevatorHeight * -1;
+  const travelTime = Math.abs(floorNum - elevator.currentFloor) * 2;
+  elevator.element.style.transform = `translateY(${verticalMove}px)`;
+  elevator.element.style.transition = `${travelTime}s linear`;
+  toggleElevatorDoors(elevatorId, travelTime * 1000);
+  setTimeout(() => {
+    elevators[elevatorId - 1].currentFloor = floorNum;
+    elevators[elevatorId - 1].inUse = false;
+  }, travelTime * 1000 + 5000);
+}
+
+function findClosestIdleElevator(floorNum) {
+  let shortestDistance = Infinity;
+  let closestElevator = null;
+  for (let i = 0; i < elevators.length; i++) {
+    if (elevators[i].inUse) continue;
+    const distance = Math.abs(floorNum - elevators[i].currentFloor);
+    if (distance < shortestDistance) {
+      shortestDistance = distance;
+      closestElevator = elevators[i];
+    }
+  }
+  return closestElevator;
+}
+
+function toggleElevatorDoors(elevatorId, duration) {
+  setTimeout(() => {
+    openElevatorDoors(elevatorId);
+  }, duration);
+  setTimeout(() => {
+    closeElevatorDoors(elevatorId);
+  }, duration + 2500);
+  setTimeout(() => {
+    activeRequests[elevatorId - 1] = null;
+  }, duration + 5000);
+}
+
+function openElevatorDoors(elevatorId) {
+  elevators[elevatorId - 1].element
+    .querySelector(`#left-door${elevatorId}`)
+    .classList.remove(`left-door-close`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#right-door${elevatorId}`)
+    .classList.remove(`right-door-close`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#left-door${elevatorId}`)
+    .classList.add(`left-door-open`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#right-door${elevatorId}`)
+    .classList.add(`right-door-open`);
+}
+
+function closeElevatorDoors(elevatorId) {
+  elevators[elevatorId - 1].element
+    .querySelector(`#left-door${elevatorId}`)
+    .classList.remove(`left-door-open`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#right-door${elevatorId}`)
+    .classList.remove(`right-door-open`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#left-door${elevatorId}`)
+    .classList.add(`left-door-close`);
+  elevators[elevatorId - 1].element
+    .querySelector(`#right-door${elevatorId}`)
+    .classList.add(`right-door-close`);
 }
