@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RDS - Lift Simulation</title>
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+  <body>
+    <div id="inputSection" class="inputSection">
+      <form action="">
+        <label for="floors">Floor count:</label>
+        <input type="number" id="floor_count" name="floors" min="1" required />
+        <label for="elevators">Elevator count:</label>
+        <input
+          type="number"
+          id="elevator_count"
+          name="elevators"
+          min="1"
+          required
+        />
+        <input type="submit" value="Generate" />
+      </form>
+    </div>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
