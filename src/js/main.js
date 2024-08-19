@@ -18,11 +18,6 @@ function checkInputValidity(floorCount, elevatorCount) {
   } else if (floorCount <= 0 || elevatorCount <= 0) {
     alert("Floor count and elevator count must be positive integers.");
     return false;
-  } else if (elevatorCount > maxElevatorCount) {
-    alert(
-      `Please enter an elevator count less than or equal to ${maxElevatorCount}.`
-    );
-    return false;
   } else if (elevatorCount > floorCount) {
     alert(
       `Please enter an elevator count less than or equal to the floor count.`
@@ -202,3 +197,31 @@ function closeElevatorDoors(elevatorId) {
     .querySelector(`#right-door${elevatorId}`)
     .classList.add(`right-door-close`);
 }
+
+// Todo - Responsive
+// Check for device width and act accordingly - show some user feedback - alert
+
+let viewportWidth = window.innerWidth;
+let viewportHeight = window.innerHeight;
+
+window.addEventListener("load", () => {
+  if (viewportWidth < 220) {
+    alert(
+      "Viewport size is too small. Elevator simulation won't function on this device."
+    );
+  }
+});
+
+function determineMaxInputValues() {
+  viewportWidth = window.innerWidth;
+  viewportHeight = window.innerHeight;
+  maxElevatorCount = parseInt(viewportWidth / 100) - 3;
+  if (viewportWidth < 500 && viewportWidth >= 300) {
+    maxElevatorCount = 2;
+  } else if (viewportWidth < 330) {
+    maxElevatorCount = 1;
+  }
+}
+
+window.addEventListener("resize", determineMaxInputValues);
+window.addEventListener("load", determineMaxInputValues);

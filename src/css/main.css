@@ -64,8 +64,7 @@ input[type="number"] {
   border-bottom: 1px solid #e6f3ff;
 }
 .elevator-labels {
-  min-width: 15%;
-  width: 100px;
+  min-width: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -105,7 +104,7 @@ button:hover {
 }
 .elevator {
   height: 100%;
-  width: 60px;
+  min-width: 60px;
   background-color: #333;
   margin: 0 20px;
   display: flex;
@@ -135,4 +134,10 @@ button:hover {
 .right-door-close {
   transform: translateX(0%);
   transition: transform 2000ms linear;
+}
+@media (max-width: 400px) {
+  .structure {
+    overflow-x: auto;
+    width: fit-content;
+  }
 }
